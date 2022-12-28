@@ -32,6 +32,18 @@ void sigintHandler(int sig_num){
 	fflush(stdout);
 }
 
+void parseSpace(char* str, char** parsed){
+	int i;
+
+	for (i = 0; i < 100; i++) {
+		parsed[i] = strsep(&str, " ");
+
+		if (parsed[i] == NULL)
+			break;
+		if (strlen(parsed[i]) == 0)
+			i--;
+	}
+}
 
 int main() {
     char inputString[100];
