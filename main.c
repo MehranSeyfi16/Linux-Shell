@@ -21,6 +21,17 @@ int takeInput(char* str) {
     return 0;
     }
 
+/* Signal Handler for SIGINT */
+void sigintHandler(int sig_num){
+	/* Reset handler to catch SIGINT next time.
+	Refer http://en.cppreference.com/w/c/program/signal */
+	signal(SIGINT, sigintHandler);
+	fprintf(stderr,"\n Cannot be terminated using Ctrl+C \n");
+	// printf("\n Cannot be terminated using Ctrl+C \n");
+
+	fflush(stdout);
+}
+
 
 int main() {
     char inputString[100];
