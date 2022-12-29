@@ -4,7 +4,7 @@ Operating Systems' midterm Project
 
 The shell is a program that takes some commands from the keyboard and gives them to the operating system to perform.
 
-THis shell can handle commands which we discuss below and also handles commands which can be handled in linux shell :
+This shell can handle commands which we discuss below and also handles commands which can be handled in linux shell :
   
 *** we use this syntax for giving commands to this shell:
     nameOfTheCommand givenFile
