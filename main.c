@@ -19,6 +19,29 @@ int takeInput(char* str) {
     return 0;
 }
 
+
+int processString(char* str, char** parsed, char** parsedpipe){
+
+        char* pipedString[2];
+        pipedFlaf = parsePipe(str, pipedString);
+
+        if (pipedFlaf) {
+            parseSpace(pipedString[0], parsed);
+            parseSpace(pipedString[1], parsedpipe);
+        }
+
+        else {
+            parseSpace(str, parsed);
+        }
+
+        if (ownCmdHandler(parsed)){
+            return 0;
+        }
+        else {
+            return 1 + pipedFlaf;
+        }
+    }
+
 void sigintHandler(int sig_num){
     signal(SIGINT, sigintHandler);
     fprintf(stderr,"\n Cannot be terminated using Ctrl+C \n");
