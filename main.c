@@ -8,39 +8,12 @@
 #include<readline/readline.h>
 #include<readline/history.h>
 
-void firstWord(char *string){
-    char *found;
-    found= strsep(&string," ");
-    printf("%s\n",found);
+void directory()
+{
+    char cwd[1024];
+    getcwd(cwd, sizeof(cwd));
+    printf("\nDir: %s", cwd);
 }
-
-int takeInput(char* str) {
-    scanf("%s", str);
-    return 0;
-}
-
-
-int processString(char* str, char** parsed, char** parsedpipe){
-
-        char* pipedString[2];
-        pipedFlaf = parsePipe(str, pipedString);
-
-        if (pipedFlaf) {
-            parseSpace(pipedString[0], parsed);
-            parseSpace(pipedString[1], parsedpipe);
-        }
-
-        else {
-            parseSpace(str, parsed);
-        }
-
-        if (ownCmdHandler(parsed)){
-            return 0;
-        }
-        else {
-            return 1 + pipedFlaf;
-        }
-    }
 
 void sigintHandler(int sig_num){
     signal(SIGINT, sigintHandler);
@@ -68,7 +41,7 @@ int commandHandler(char** parsed){
         }
     }
     if(cmdNumber==1){
-        printf("\nEXited Successfully\n");
+        printf("\nExnlited Successfully\n");
         exit(0);
     }
     if(cmdNumber==2){
@@ -152,12 +125,56 @@ void parseSpace(char* str, char** parsed){
     }
 }
 
-int main() {
-    char inputString[100];
-    char string[100];
-    takeInput(string);
-    firstWord(string);
+int handlePipe(char* str, char** pipedString)
+{
+    for (int i = 0; i < 2; i++) {
+        pipedString[i] = strsep(&str, "|");
+        if (pipedString[i] == NULL)
+            break;
+    }
+    if (pipedString[1] != NULL)
+        return 1;
+    else {
+        return 0;
+    }
+}
 
-    return 0;
+int processString(char* str, char** parsed, char** parsedpipe){
 
+    char* pipedString[2];
+    int pipedFlag = 0;
+    pipedFlag = handlePipe(str, pipedString);
+
+    if (pipedFlag) {
+        parseSpace(pipedString[0], parsed);
+        parseSpace(pipedString[1], parsedpipe);
+
+    }
+    else {
+        parseSpace(str, parsed);
+    }
+
+    if (commandHandler(parsed)){
+        return 0;
+    }
+    else{
+        return 1 + pipedFlag;
+    }
+}
+
+int main(){
+    char input[1000];
+    char *parsedArguments[100];
+    char* parsedArgumentsPiped[100];
+    int flag = 0;
+
+    signal(SIGINT, sigintHandler);
+    FILE *filePointer ;
+
+    while (1) {
+        directory();
+        if (receiveCommand(input)) {
+            continue;
+        }
+    }
 }
