@@ -26,7 +26,7 @@ Command| Does...
 `nl`|number of lines - prints number of lines in given file.
 `fw`|first word - prints first word of every lines in given file.
 
-### List of commands that can be used to => All system commands like:
+### List of commands that can be used => All system commands like:
 
 - `ls`
 - `pwd`
