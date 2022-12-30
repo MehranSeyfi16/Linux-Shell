@@ -142,10 +142,10 @@ int handlePipe(char* str, char** pipedString)
 int processString(char* str, char** parsed, char** parsedpipe){
 
     char* pipedString[2];
-    int pipedFlag = 0;
-    pipedFlag = handlePipe(str, pipedString);
+    int pipedreturend = 0;
+    pipedreturend = handlePipe(str, pipedString);
 
-    if (pipedFlag) {
+    if (pipedreturend) {
         parseSpace(pipedString[0], parsed);
         parseSpace(pipedString[1], parsedpipe);
 
@@ -158,7 +158,7 @@ int processString(char* str, char** parsed, char** parsedpipe){
         return 0;
     }
     else{
-        return 1 + pipedFlag;
+        return 1 + pipedreturend;
     }
 }
 
@@ -166,7 +166,7 @@ int main(){
     char input[1000];
     char *parsedArguments[100];
     char* parsedArgumentsPiped[100];
-    int flag = 0;
+    int returend = 0;
 
     signal(SIGINT, sigintHandler);
     FILE *filePointer ;
@@ -176,5 +176,80 @@ int main(){
         if (receiveCommand(input)) {
             continue;
         }
+
+	filePointer = fopen("pooooof.txt", "a");
+	fputs(input,filePointer);
+	fputs("\n",filePointer);
+	fclose(filePointer);
+
+	returend = processString(input, parsedArguments, parsedArgumentsPiped);
+	
+	if (returend == 1){
+            pid_t pid = fork();
+
+            if (pid == -1) {
+                fprintf(stderr,"\nForking child failed..");
+            }
+
+            else if (pid == 0) {
+                if (execvp(parsedArguments[0], parsedArguments) < 0) {
+                    fprintf(stderr,"\nWrong command..");
+                }
+
+            }
+            else {
+                wait(NULL);
+            }
+        }
+
+        if (returend == 2){
+
+            int pipedFD[2];
+            pid_t p1, p2;
+
+            if (pipe(pipedFD) < 0){
+                fprintf(stderr ,"\ninitialized failed");
+            }
+
+            p1 = fork();
+
+            if (p1 < 0) {
+                fprintf(stderr ,"\nfork error");
+            }
+
+            if (p1 == 0) {
+                close(pipedFD[0]);
+                dup2(pipedFD[1], STDOUT_FILENO);
+                close(pipedFD[1]);
+
+                if (execvp(parsedArguments[0], parsedArguments) < 0) {
+                    fprintf(stderr ,"\nexecute command 1 failed");
+                    exit(0);
+                }
+            }
+            else {
+                p2 = fork();
+
+                if (p2 < 0) {
+                    fprintf(stderr ,"\nfork failed");
+                }
+
+                if (p2 == 0) {
+                    close(pipedFD[1]);
+                    dup2(pipedFD[0], STDIN_FILENO);
+                    close(pipedFD[0]);
+
+                    if (execvp(parsedArgumentsPiped[0], parsedArgumentsPiped) < 0) {
+                        fprintf(stderr ,"\execute command 2 failed");
+                        exit(0);
+                    }
+                }
+                else {
+                    wait(NULL);
+                    wait(NULL);
+                }
+            }
+        }
     }
+    return 0;
 }
